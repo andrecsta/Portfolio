@@ -52,49 +52,122 @@
             <div class="row justify-content-center">
               <div class="col-12 col-sm-12 col-md-10 col-lg-10 col-xl-10 col-xxl-10">
                   <header class="ds-work-det-hed">
-                      <h1 class="ds-work-det-title">Enhancing Customer Experience and Boosting Sales in E-commerce</h1>
-                      <span class="ds-work-det-dep">Machine Learning - 2023</span>
+                      <h1 class="ds-work-det-title">Fraud Detection in Real Estate Transactions in NYC</h1>
+                      <span class="ds-work-det-dep">Using PCA and Tensorflow's Autoencoder</span>
                   </header>
-                  <figure><img src="assets/images/Img_IncreasingSales.png"></figure>
+                  <!--
+                  <figure><img src="assets/images/FraudInRealEstateProject.jpg"></figure>
+                  -->
                   <div class="ds-work-content-sec">
                       <div class="row justify-content-center">
                           <div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-8 col-xxl-8">
-                            <p>This project revolves around an e-commerce company that uses two sales channels: a website and a mobile app. To facilitate purchases, customers are required to create personalized accounts and log in, enabling them to access a wide range of products and services. In an effort to optimize user engagement and satisfaction, the system diligently records the duration of each login session, tracking user activity across both the app and website platforms.</p>
+                            <p>The aim of this project is to detect fraudulent real estate transactions using machine learning techniques. 
+                              The dataset used is from NYC Open Data and involves extensive cleaning, feature engineering, and 
+                              the creation of two fraud scores using PCA and autoencoder models.</p>
 
-                            <p>Due to budgetary constraints, the decision-makers must focus on either optimizing the website or refining the app to achieve the desired results: Implement targeted improvements tailored to the chosen platform, seeking to create an immersive and effortless shopping experience that captivates and retains customers. </p>
+                            <p>This project begins with a thorough exploratory analysis, choosing the ones that are most relevant for our goal.
+                              Those are the summarized steps: </p>
                         
-                              <h2>Know-how</h2>
-                              <p>Through a data-driven approach, this project starts with the overall analysis of the datasets. 
-                                Then, as we understood our data, we chose the relevant metrics and applied three Linear Regression models. 
-                              <p>We chose the RMSE metric to evaluate them.</p>
-                              </p>
+                              <h3>Part 1 - Data Cleaning</h3>
+                              <p>         </p>
+                              <h5>Step 1: Substituting Missing Zip Codes</h5>
+
+                                <p><strong>Issue:</strong> </p>
+                                <p>Identified null values in the some columns during exploratory analysis.
+                                <p><strong>Approach:</strong></p>
+
+                                <ul>
+                                  <li>Created functions to find the mode (most common) results for each variable and filled missing values using lookalike groups.</li>
+                                  <li>Grouped values by Borough and Block codes and applied the functions to fill missing ZIP codes.</li>
+                                  <li>Checked and adjusted for groups without a mode value by considering the frequency of neighboring groups.</li>
+                                </ul>
+                                
                               
-                              <ul> 
-                                <li><strong>Regular Linear Regression: </strong> RMSE:  2.786112</li>
-                                <li><strong>Ridge Regression: </strong> RMSE: 2.786423</li>
-                                <li><strong>Lasso Regression: </strong> RMSE: 2.790789</li>
-                              </ul>
 
-                              <p>Having values too close to each other, we chose the Regular Linear Regression model as the best one.</p>
+                              <h5>Step 2: Substituting Missing Values in Numeric Columns</h5>
+                              <p>         </p>
+                                <p><strong>Issue:</strong> </p>
+                                <p>Observed missing values and zeros in columns such as FULLVAL, AVLAND, AVTOT, BLDFRONT, BLDDEPTH, LTFRONT, LTDEPTH.</p>
+                                <p><strong>Approach:</strong></p>
 
-                              <h2>Conclusion</h2>
-                              <p>Our goal is to predict the <strong> Total Amount Spent </strong> per customer. We concluded that:</p>
+                                <ul>
+                                  <li>Replaced zeros with NaN values.</li>
+                                  <li>Utilized median values within groups of Zip and BLDGCL codes to fill NaN values, considering groups with at least 5 registries.</li>
+                                  <li>Applied a similar strategy using combinations of Zip, TAXCLASS, B, and BLOCK codes for each numeric variable.</li>
+                                </ul>
+                                
+                              
+
+                              <h3>Part 2.2 - Feature Engineering</h3>
+                              <p>         </p>
+                              <h5>Step 1: Creation of Area Variables</h5>
 
                               <ul>
-                                  <li>A 1 unit increase in the <strong>Customer Registration Time (in years)</strong> is associated with an increase of USD 63.74 in the client's <strong>Total Amount Spent</strong> per month.</li>
-                                  <li>A 1 unit increase in <strong>Average Clicks per Session</strong> is associated with an increase of USD 26.23 in the client's <strong>Total Amount Spent</strong> per month.</li>
-                                  <li>A 1 unit increase in <strong>Time logged in the app</strong> is associated with an increase of USD 38.57 in the client's <strong>Total Amount Spent</strong> per month.</li>
-                                  <li>A 1 unit increase in <strong>Time logged in the website</strong> is associated with an increase of USD 0.68 in the client's <strong>Total Amount Spent</strong> per month.</li>
+                                <li>Calculated two area variables (<code>AREA1</code> and <code>AREA2</code>) based on combinations of LTFRONT, LTDEPTH, BLDFRONT, and BLDDEPTH.</li>
+                                <li>Derived a third area variable (<code>AREA3</code>) by combining <code>AREA2</code> with the &#39;STORIES&#39; column.</li>
                               </ul>
-                          
-                              <p>Is it worth to invest in the website? No, the gain is minimal.</p>
-                          
-                              <p>Is it worth to invest in the app? 
-                                Yes, for each 1 unit increase in <strong>Time logged in the app</strong>, there can be an increase of USD 38.57 in the client's 
-                                <strong>Total Amount Spent</strong> per month. Much higher than the increase of 1 unit in the <strong>Time logged in the website</strong>, 
-                                which would add only USD 0.68 to the <strong>Total Amount Spent</strong>.
-                          
-                              <p>Nevertheless, increasing customer retention (measured by the variable <strong>Customer Registration Time</strong>) proves to be the most profitable action.</p>
+
+                              <h4>Step 2: Creation of Index Variables</h4>
+
+                              <ul>
+                                <li>Generated indexes by dividing FULLVAL, AVLAND, and AVTOT by the newly created area variables.</li>
+                                <li>Calculated mean indexes for groups based on ZIP, TAXCLASS, and B variables.</li>
+                              </ul> 
+
+                              <h3>Part 2.3 - Building the Model (Score 1 using PCA)</h3>
+                              <p>         </p>
+                              <h5>Step 1: Data Standardization</h5>
+
+                              <ul>
+                                <li>Standardized the features created in Part 2.2 using PCA.</li>
+                              </ul> 
+
+                              <h5>Step 2: Applying PCA Algorithm</h5>
+
+                              <ul>
+                                <li>Used PCA to reduce dimensionality, aiming to explain a significant portion of the variance with fewer variables.</li>
+                                <li>Visualized the cumulative sum of explained variance.</li>
+                                <li>Chose the number of components based on the cumulative explained variance plot.</li>
+                                <li>Trained and transformed the model using the chosen number of components.</li>
+                                <li>Squared the results to emphasize differences between data points.</li>
+                                <li>Created a fraud score (Score 1) by summing the squared PCA values.</li>
+                              </ul>
+
+                              <h3>Part 2.4 - Building the Model (Score 2 using Autoencoder)</h3>
+                              <p>         </p>
+                              <h4>Step 1: Creating the Autoencoder Model</h4>
+
+                              <ul>
+                                <li>Used the 10 principal components from PCA as input for an autoencoder neural network.</li>
+                                <li>Split the data into training and test sets.</li>
+                                <li>Trained the autoencoder model to learn the patterns in the data, focusing on minimizing mean squared error.</li>
+                                <li>Evaluated the model performance using loss curves.</li>
+                              </ul>
+
+                              <h5>Step 2: Evaluating the Model</h5>
+
+                              <ul>
+                                <li>Loaded the trained autoencoder model.</li>
+                                <li>Calculated the difference between the input and output of the autoencoder.</li>
+                                <li>Created a fraud score (Score 2) based on the squared differences.</li>
+                              </ul>
+
+                              <h5>Step 3: Integration and Final Score</h5>
+
+                              <ul>
+                                <li>Integrated the two scores using a weighted combination.</li>
+                                <li>Ranked the scores and calculated a final rank based on the weighted combination.</li>
+                                <li>Combined the final rank with the original dataset for further analysis.</li>
+                              </ul>
+
+                              <h3>Conclusion</h3>
+
+                              <p>The project demonstrated a systematic approach to data cleaning, feature engineering, and model building, 
+                                resulting in two distinct fraud scores that were integrated to provide a comprehensive final rank for potential 
+                                fraudulent real estate transactions.
+                                 The step-by-step explanation highlights the thoughtful consideration of data issues and the 
+                                 implementation of advanced machine learning techniques for fraud detection.</p>
+
                           </div>
                       </div>
                   </div>
@@ -102,7 +175,7 @@
                   <div class="ds-work-content-sec">
                       <div class="row justify-content-center">
                           <div class="col-12 col-sm-12 col-md-8 col-lg-8 col-xl-8 col-xxl-8">
-                            <a href="https://github.com/andrecsta/ml-projects/tree/main/Increasing%20Sales%20with%20Machine%20Learning" class="ds-button">Check the code</a>
+                            <a href="Fraud Detection using PCA and Tensorflow Autoencoder/FraudDetectionUsingMLandDL.ipynb" class="ds-button">Check the code</a>
                       </div>
                   </div>
               </div>
